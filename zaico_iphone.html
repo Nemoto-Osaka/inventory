@@ -116,7 +116,8 @@ body{
 .pcard{background:var(--W);border-bottom:1px solid var(--div);display:flex;align-items:center;padding:14px 8px 14px 15px;gap:13px;cursor:pointer;min-height:80px;}
 .pcard:first-child{border-top:1px solid var(--div);}
 .pcard:active{background:var(--Zl);}
-.pthumb{width:56px;height:56px;border-radius:12px;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.pthumb{width:56px;height:56px;border-radius:12px;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;}
+.pthumb img{width:100%;height:100%;object-fit:cover;border-radius:12px;}
 .pbody{flex:1;min-width:0;}
 .pnm{font-size:15px;font-weight:700;color:var(--tx);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35;margin-bottom:4px;}
 .pcd{font-size:11px;color:var(--g5);font-family:monospace;margin-bottom:4px;}
@@ -248,7 +249,16 @@ body{
 
 /* 詳細シート */
 .det-top{background:var(--Z);padding:20px;color:#fff;display:flex;align-items:flex-start;gap:15px;}
-.det-ico{width:68px;height:68px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0;}
+.det-ico{width:68px;height:68px;border-radius:14px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0;overflow:hidden;}
+.det-ico img{width:100%;height:100%;object-fit:cover;border-radius:14px;}
+.photo-upload-area{border:2px dashed var(--g3);border-radius:10px;padding:16px;text-align:center;cursor:pointer;margin-bottom:13px;transition:all .15s;}
+.photo-upload-area.has-photo{border-style:solid;border-color:var(--Z);padding:6px;}
+.photo-preview{width:100%;max-height:160px;object-fit:cover;border-radius:8px;display:block;}
+.photo-placeholder{font-size:32px;margin-bottom:6px;}
+.photo-lbl{font-size:13px;color:var(--g5);font-weight:600;}
+.photo-change{font-size:11px;color:var(--Z);margin-top:4px;font-weight:700;}
+.tx-ico{width:60px;height:60px;border-radius:12px;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;overflow:hidden;}
+.tx-ico img{width:100%;height:100%;object-fit:cover;border-radius:12px;}
 .det-nm{font-size:18px;font-weight:900;margin-bottom:5px;line-height:1.2;letter-spacing:-.3px;}
 .det-cd{font-size:11px;opacity:.8;font-family:monospace;}
 .det-badge{display:inline-block;background:rgba(255,255,255,.25);padding:3px 9px;border-radius:4px;font-size:11px;font-weight:700;margin-top:7px;}
@@ -422,13 +432,31 @@ body{
     <div class="dcard">
       <div class="drow"><div class="dico di-b">🖨</div><div class="dinf"><div class="dlbl">QRラベルを印刷</div><div class="dsub">入庫用(+1)・出庫用(-1)を製品ごとに生成</div></div><button class="dbtn db-b" onclick="printQR()">印刷</button></div>
     </div>
+    <div class="sec-hd">SharePoint連携設定</div>
+    <div class="dcard" style="margin-bottom:10px;">
+      <div class="cfg-row" style="flex-direction:column;align-items:stretch;gap:6px;">
+        <div class="cl">SharePointサイトURL</div>
+        <div class="cs">例: https://会社.sharepoint.com/sites/サイト名</div>
+        <input class="cfg-inp" id="cfg-spurl" placeholder="https://nemotodocojp.sharepoint.com/sites/O-SAKA" oninput="saveCfg()" style="width:100%;text-align:left;font-size:12px;">
+      </div>
+      <div class="cfg-row" style="border-bottom:none;">
+        <div class="cfg-lbl"><div class="cl">SharePoint同期</div><div class="cs">ONにすると入出庫時にリアルタイム同期</div></div>
+        <div id="sp-toggle" onclick="toggleSP()" style="width:48px;height:28px;border-radius:14px;background:var(--g3);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;">
+          <div id="sp-thumb" style="position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);"></div>
+        </div>
+      </div>
+      <div class="cfg-row" style="border-bottom:none;">
+        <div style="flex:1;font-size:13px;color:var(--g6);" id="sp-status">SharePoint: 未接続</div>
+        <button class="dbtn db-b" onclick="testSP()">接続テスト</button>
+      </div>
+    </div>
     <div class="sec-hd">設定</div>
     <div class="dcard" style="margin-bottom:0;">
       <div class="cfg-row"><div class="cfg-lbl"><div class="cl">担当者名</div><div class="cs">履歴に記録される名前</div></div><input class="cfg-inp" id="cfg-user" placeholder="例: 高橋" oninput="saveCfg()"></div>
       <div class="cfg-row"><div class="cfg-lbl"><div class="cl">要発注しきい値</div><div class="cs">この点数以下でアラート</div></div><input type="number" class="cfg-inp" id="cfg-thr" placeholder="5" oninput="saveCfg()" style="width:80px;"></div>
       <div class="cfg-row" style="border-bottom:none;"><div class="cfg-lbl"><div class="cl" style="color:var(--Rm);">全データリセット</div><div class="cs">製品・履歴をすべて削除</div></div><button class="dbtn db-r" onclick="resetAll()">リセット</button></div>
     </div>
-    <div style="text-align:center;font-size:12px;color:var(--g4);padding:20px 0 6px;">在庫管理 v5.0 — 根本杏林堂</div>
+    <div style="text-align:center;font-size:12px;color:var(--g4);padding:20px 0 6px;">在庫管理 v6.0 — 根本杏林堂</div>
   </div>
 
 </div><!-- /scroll -->
@@ -509,6 +537,16 @@ body{
       <input type="hidden" id="ep-id">
       <div class="fg"><label class="fl">製品コード（QR識別子）*</label><input class="fi" id="ep-code" placeholder="例: MED-001"></div>
       <div class="fg"><label class="fl">製品名 *</label><input class="fi" id="ep-name" placeholder="例: 血圧計 上腕式A型"></div>
+      <div class="fg">
+        <label class="fl">写真</label>
+        <div class="photo-upload-area" id="photo-area" onclick="document.getElementById('ep-photo').click()">
+          <div id="photo-inner">
+            <div class="photo-placeholder">📷</div>
+            <div class="photo-lbl">タップして写真を選択</div>
+          </div>
+        </div>
+        <input type="file" id="ep-photo" accept="image/*" style="display:none;" onchange="onPhotoChange(event)">
+      </div>
       <div class="fg-2 fg">
         <div><label class="fl">カテゴリ</label><input class="fi" id="ep-cat" placeholder="計測機器" list="cat-dl"><datalist id="cat-dl"></datalist></div>
         <div><label class="fl">絵文字</label><input class="fi fi-em" id="ep-em" placeholder="📦" maxlength="4"></div>
@@ -531,9 +569,166 @@ body{
 <div class="toast" id="toast"></div>
 
 <script>
-var S={products:[],history:[],cfg:{user:'',threshold:5}};
+var S={products:[],history:[],cfg:{user:'',threshold:5,spUrl:'',spEnabled:false}};
 var scanMode='in',qrSc=null,activeCat='all',activeSort='name';
 var txPid=null,txType='in',txQty=1,detPid=null,editPid=null;
+
+// ── SharePoint REST API ──
+var SP_SITE='';
+var SP_LIST_MASTER='部品マスタ';
+var SP_LIST_HIST='在庫履歴';
+
+function spHeaders(){
+  return {
+    'Accept':'application/json;odata=nometadata',
+    'Content-Type':'application/json;odata=nometadata',
+    'X-RequestDigest': window._spDigest||''
+  };
+}
+
+// RequestDigest取得（書き込み時に必要）
+function getDigest(){
+  return fetch(SP_SITE+'/_api/contextinfo',{method:'POST',headers:{'Accept':'application/json;odata=nometadata'}})
+    .then(function(r){return r.json();})
+    .then(function(d){window._spDigest=d.FormDigestValue;return d.FormDigestValue;})
+    .catch(function(){return '';});
+}
+
+// SharePoint接続テスト
+function testSP(){
+  var url=document.getElementById('cfg-spurl').value.trim();
+  if(!url){toast('サイトURLを入力してください','err');return;}
+  SP_SITE=url.replace(/\/$/,'');
+  setSPStatus('ing','接続確認中...');
+  fetch(SP_SITE+'/_api/web/title',{headers:{'Accept':'application/json;odata=nometadata'}})
+    .then(function(r){
+      if(r.ok)return r.json();
+      throw new Error('HTTP '+r.status);
+    })
+    .then(function(d){
+      setSPStatus('ok','✅ 接続成功: '+d.value);
+      toast('SharePointに接続できました！','ok');
+    })
+    .catch(function(e){
+      setSPStatus('err','❌ 接続失敗: ログインが必要な場合はSharePointを先に開いてください');
+      toast('接続失敗。SharePointにログイン済みか確認してください','err');
+    });
+}
+
+function setSPStatus(type,msg){
+  var el=document.getElementById('sp-status');
+  if(el)el.textContent='SharePoint: '+msg;
+}
+
+function toggleSP(){
+  S.cfg.spEnabled=!S.cfg.spEnabled;
+  updateSPToggle();
+  saveCfg();
+  if(S.cfg.spEnabled){
+    SP_SITE=(S.cfg.spUrl||'').replace(/\/$/,'');
+    toast('SharePoint同期をONにしました','ok');
+    spFetchProducts();
+  } else {
+    toast('SharePoint同期をOFFにしました');
+  }
+}
+function updateSPToggle(){
+  var tog=document.getElementById('sp-toggle');
+  var thumb=document.getElementById('sp-thumb');
+  if(!tog)return;
+  tog.style.background=S.cfg.spEnabled?'var(--Z)':'var(--g3)';
+  if(thumb)thumb.style.left=S.cfg.spEnabled?'22px':'2px';
+}
+
+// SharePointから部品マスタを取得
+function spFetchProducts(){
+  if(!S.cfg.spEnabled)return;
+  SP_SITE=(S.cfg.spUrl||'').replace(/\/$/,'');
+  if(!SP_SITE)return;
+  setSPStatus('ing','データ取得中...');
+  fetch(SP_SITE+'/_api/web/lists/getbytitle(\''+encodeURIComponent(SP_LIST_MASTER)+'\')/items?$select=Title,製品コード,カテゴリ,単価,発注点,在庫数,保管場所,最終更新者&$top=500',
+    {headers:{'Accept':'application/json;odata=nometadata'}})
+    .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
+    .then(function(d){
+      if(d.value&&d.value.length>0){
+        // SharePointのデータでローカルを上書き
+        var spProds=d.value.map(function(item){
+          return {
+            id:'sp'+item.ID,
+            spId:item.ID,
+            code:item['製品コード']||'',
+            name:item.Title||'',
+            category:item['カテゴリ']||'未分類',
+            emoji:'📦',
+            price:parseFloat(item['単価'])||0,
+            minStock:parseInt(item['発注点'])||5,
+            stock:parseInt(item['在庫数'])||0,
+            note:item['保管場所']||''
+          };
+        });
+        // 写真など既存ローカルデータとマージ
+        spProds.forEach(function(sp){
+          var local=getPByCode(sp.code);
+          if(local){sp.emoji=local.emoji||'📦';sp.photo=local.photo||null;sp.id=local.id;}
+        });
+        S.products=spProds;
+        save();renderAll();
+        setSPStatus('ok','✅ '+spProds.length+'件取得完了');
+        toast('SharePointから'+spProds.length+'件取得しました','ok');
+      } else {
+        setSPStatus('ok','✅ 接続OK（データなし）');
+      }
+    })
+    .catch(function(e){
+      setSPStatus('err','❌ 取得失敗');
+      toast('SharePointからの取得に失敗しました','err');
+    });
+}
+
+// SharePointの在庫数を更新
+function spUpdateStock(p,delta){
+  if(!S.cfg.spEnabled||!p.spId)return Promise.resolve();
+  SP_SITE=(S.cfg.spUrl||'').replace(/\/$/,'');
+  return getDigest().then(function(){
+    var now=new Date().toISOString();
+    var body=JSON.stringify({'在庫数':p.stock,'最終更新者':S.cfg.user||''});
+    return fetch(SP_SITE+'/_api/web/lists/getbytitle(\''+encodeURIComponent(SP_LIST_MASTER)+'\')/items('+p.spId+')',{
+      method:'PATCH',
+      headers:Object.assign(spHeaders(),{'IF-MATCH':'*','X-HTTP-Method':'MERGE'}),
+      body:body
+    });
+  }).then(function(r){
+    if(r.ok||r.status===204){
+      // 履歴も追記
+      return spAddHistory(p,delta);
+    }
+  }).catch(function(e){
+    toast('SharePoint更新失敗（ローカルには保存済み）','warn');
+  });
+}
+
+// SharePointの在庫履歴に追記
+function spAddHistory(p,delta){
+  if(!S.cfg.spEnabled)return Promise.resolve();
+  return getDigest().then(function(){
+    var type=delta>0?'入庫':'出庫';
+    var body=JSON.stringify({
+      'Title':new Date().toLocaleString('ja-JP'),
+      '種別':type,
+      '製品コード':p.code,
+      '製品名':p.name,
+      '数量':delta,
+      '担当者':S.cfg.user||'',
+      'メモ':'アプリから',
+      '記録日時':new Date().toISOString()
+    });
+    return fetch(SP_SITE+'/_api/web/lists/getbytitle(\''+encodeURIComponent(SP_LIST_HIST)+'\')/items',{
+      method:'POST',
+      headers:spHeaders(),
+      body:body
+    });
+  }).catch(function(){});
+}
 
 // ── ストレージ ──
 function save(){
@@ -589,9 +784,16 @@ load();
 document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('cfg-user').value=S.cfg.user||'';
   document.getElementById('cfg-thr').value=S.cfg.threshold||5;
+  document.getElementById('cfg-spurl').value=S.cfg.spUrl||'';
+  updateSPToggle();
   showBBanner();
   if(!S.products.length) loadSample();
   else renderAll();
+  // SharePoint同期ONの場合は起動時にデータ取得
+  if(S.cfg.spEnabled&&S.cfg.spUrl){
+    SP_SITE=S.cfg.spUrl.replace(/\/$/,'');
+    setTimeout(spFetchProducts,1000);
+  }
   setInterval(save,20000);
   window.addEventListener('visibilitychange',function(){if(document.hidden)save();});
 });
@@ -682,7 +884,7 @@ function renderList(){
     var scls=p.stock===0?'st-zero':p.stock<=(p.minStock||thr)?'st-low':'st-ok';
     var slbl=p.stock===0?'在庫切れ':p.stock<=(p.minStock||thr)?'要発注':'在庫あり';
     return '<div class="pcard" onclick="openDet(\''+p.id+'\')">'
-      +'<div class="pthumb">'+(p.emoji||'📦')+'</div>'
+      +thumbHtml(p)
       +'<div class="pbody"><div class="pnm">'+esc(p.name)+'</div>'
       +'<div class="pcd">'+esc(p.code)+'</div>'
       +'<div class="ptags"><span class="tag tcat">'+esc(p.category||'未分類')+'</span>'
@@ -711,7 +913,7 @@ function openDet(pid){
   var slbl=p.stock===0?'在庫切れ':p.stock<=(p.minStock||thr)?'要発注':'在庫あり';
   document.getElementById('det-sh').innerHTML=
     '<div class="shdl"></div>'
-    +'<div class="det-top"><div class="det-ico">'+(p.emoji||'📦')+'</div><div>'
+    +'<div class="det-top">'+detIcoHtml(p)+'<div>'
     +'<div class="det-nm">'+esc(p.name)+'</div><div class="det-cd">'+esc(p.code)+'</div>'
     +'<span class="det-badge">'+esc(p.category||'未分類')+'</span></div></div>'
     +'<div class="det-stock"><div class="det-snum '+qcls+'">'+p.stock+'</div>'
@@ -736,7 +938,7 @@ function openTxSheet(pid,type){
   txPid=pid;txQty=1;txType=type||'in';
   var thr=parseInt(S.cfg.threshold)||5;
   document.getElementById('tx-phd').innerHTML=
-    '<div class="tx-ico">'+(p.emoji||'📦')+'</div>'
+    txIcoHtml(p)
     +'<div><div class="tx-nm">'+esc(p.name)+'</div><div class="tx-cd">'+esc(p.code)+'</div>'
     +'<div class="tx-now">現在庫: <strong>'+p.stock+'点</strong></div></div>';
   document.getElementById('qdisp').textContent='1';
@@ -760,10 +962,13 @@ function doTx(){
   var ns=p.stock+delta;
   if(ns<0){toast('在庫が不足しています（現在: '+p.stock+'点）','err');return;}
   p.stock=ns;
-  pushH(txType,p,delta,document.getElementById('memo').value.trim());
+  var memo=document.getElementById('memo').value.trim();
+  pushH(txType,p,delta,memo);
   save();renderAll();
   closeOv('ov-tx');
   toast((txType==='in'?'📥 入庫':'📤 出庫')+'しました — '+p.name+' → '+ns+'点','ok');
+  // SharePoint同期
+  if(S.cfg.spEnabled) spUpdateStock(p,delta);
 }
 
 // ── スキャン ──
@@ -808,6 +1013,8 @@ function onQR(raw){
   pushH(type,p,delta,'QRスキャン');
   save();renderAll();
   showFlash((type==='in'?'📥 入庫 +1':'📤 出庫 −1')+'  '+p.name+'  → '+ns+'点','ok');
+  // SharePoint同期
+  if(S.cfg.spEnabled) spUpdateStock(p,delta);
   setTimeout(function(){openDet(p.id);},350);
 }
 function showFlash(msg,type){
@@ -843,6 +1050,50 @@ function renderHist(){
   }).join('');
 }
 
+// ── 写真処理 ──
+var currentPhotoData = null;
+function onPhotoChange(e){
+  var file=e.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    currentPhotoData=ev.target.result;
+    var area=document.getElementById('photo-area');
+    area.classList.add('has-photo');
+    document.getElementById('photo-inner').innerHTML=
+      '<img class="photo-preview" src="'+currentPhotoData+'">'
+      +'<div class="photo-change">タップして変更</div>';
+  };
+  reader.readAsDataURL(file);
+}
+function setPhotoArea(photoData){
+  var area=document.getElementById('photo-area');
+  if(photoData){
+    area.classList.add('has-photo');
+    document.getElementById('photo-inner').innerHTML=
+      '<img class="photo-preview" src="'+photoData+'">'
+      +'<div class="photo-change">タップして変更</div>';
+    currentPhotoData=photoData;
+  } else {
+    area.classList.remove('has-photo');
+    document.getElementById('photo-inner').innerHTML=
+      '<div class="photo-placeholder">📷</div>'
+      +'<div class="photo-lbl">タップして写真を選択</div>';
+    currentPhotoData=null;
+  }
+}
+function thumbHtml(p){
+  if(p.photo) return '<div class="pthumb"><img src="'+p.photo+'" alt="'+esc(p.name)+'"></div>';
+  return '<div class="pthumb">'+(p.emoji||'📦')+'</div>';
+}
+function detIcoHtml(p){
+  if(p.photo) return '<div class="det-ico"><img src="'+p.photo+'" alt="'+esc(p.name)+'"></div>';
+  return '<div class="det-ico">'+(p.emoji||'📦')+'</div>';
+}
+function txIcoHtml(p){
+  if(p.photo) return '<div class="tx-ico"><img src="'+p.photo+'" alt="'+esc(p.name)+'"></div>';
+  return '<div class="tx-ico">'+(p.emoji||'📦')+'</div>';
+}
+
 // ── 追加/編集 ──
 function openAdd(){
   editPid=null;
@@ -855,6 +1106,8 @@ function openAdd(){
   document.getElementById('ep-min').value='5';
   document.getElementById('ep-stk').value='0';
   document.getElementById('ep-del').style.display='none';
+  document.getElementById('ep-photo').value='';
+  setPhotoArea(null);
   openOv('ov-add');
 }
 function openEdit(pid){
@@ -871,6 +1124,8 @@ function openEdit(pid){
   document.getElementById('ep-stk').value=p.stock||0;
   document.getElementById('ep-note').value=p.note||'';
   document.getElementById('ep-del').style.display='';
+  document.getElementById('ep-photo').value='';
+  setPhotoArea(p.photo||null);
   openOv('ov-add');
 }
 function saveProd(){
@@ -881,10 +1136,11 @@ function saveProd(){
     var p=getP(editPid);if(!p)return;
     var os=p.stock;
     Object.assign(p,{code:code,name:name,category:document.getElementById('ep-cat').value.trim()||'未分類',emoji:document.getElementById('ep-em').value.trim()||'📦',price:parseFloat(document.getElementById('ep-price').value)||0,minStock:parseInt(document.getElementById('ep-min').value)||5,stock:parseInt(document.getElementById('ep-stk').value)||0,note:document.getElementById('ep-note').value.trim()});
+    if(currentPhotoData) p.photo=currentPhotoData;
     if(p.stock!==os)pushH('adjust',p,p.stock-os,'マスタ編集');
   }else{
     if(getPByCode(code)){toast('このコードは既に使われています','err');return;}
-    var np={id:'p'+Date.now(),code:code,name:name,category:document.getElementById('ep-cat').value.trim()||'未分類',emoji:document.getElementById('ep-em').value.trim()||'📦',price:parseFloat(document.getElementById('ep-price').value)||0,minStock:parseInt(document.getElementById('ep-min').value)||5,stock:parseInt(document.getElementById('ep-stk').value)||0,note:document.getElementById('ep-note').value.trim()};
+    var np={id:'p'+Date.now(),code:code,name:name,category:document.getElementById('ep-cat').value.trim()||'未分類',emoji:document.getElementById('ep-em').value.trim()||'📦',price:parseFloat(document.getElementById('ep-price').value)||0,minStock:parseInt(document.getElementById('ep-min').value)||5,stock:parseInt(document.getElementById('ep-stk').value)||0,note:document.getElementById('ep-note').value.trim(),photo:currentPhotoData||null};
     S.products.push(np);
     if(np.stock>0)pushH('in',np,np.stock,'初期登録');
   }
@@ -900,6 +1156,7 @@ function deleteProd(){
 function saveCfg(){
   S.cfg.user=document.getElementById('cfg-user').value.trim();
   S.cfg.threshold=parseInt(document.getElementById('cfg-thr').value)||5;
+  S.cfg.spUrl=(document.getElementById('cfg-spurl').value||'').trim();
   save();updateAlerts();renderList();
 }
 function dlMasterCSV(){
